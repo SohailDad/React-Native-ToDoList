@@ -13,6 +13,7 @@ import axios from 'axios';
 const App = () => {
     const [todos, setTodos] = useState([]);
     const [text, setText] = useState('');
+    const [editingTodo, setEditingTodo] = useState(null); // Tracks the todo being edited
 
     const API_URL = 'http://localhost:5000'; // Use 'localhost' for iOS Simulator and '10.0.2.2' for Android Emulator
 
@@ -42,6 +43,24 @@ const App = () => {
         }
     };
 
+    // Update existing todo
+    const updateTodo = async () => {
+        console.log("updated.......")
+        if (!editingTodo) return; // Ensure we are in edit mode
+        try {
+            const response = await axios.put(`${API_URL}/todos/${editingTodo}`, { text });
+            setTodos((prevTodos) =>
+                prevTodos.map((todo) =>
+                    todo._id == editingTodo ? response.data : todo
+                )
+            );
+            setText(''); // Clear the input field
+            setEditingTodo(null); // Exit edit mode
+        } catch (error) {
+            console.error("Error updating todo:", error);
+        }
+    };
+
     // Delete todo
     const deleteTodo = async (id) => {
         try {
@@ -52,17 +71,26 @@ const App = () => {
         }
     };
 
+    // Handle edit button click
+    const handleEdit = (todo) => {
+        setText(todo.text); // Set the input field to the selected todo's text
+        setEditingTodo(todo._id); // Enter edit mode
+    };
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>To-Do List</Text>
             <View style={styles.inputContainer}>
                 <TextInput
                     style={styles.input}
-                    placeholder="Add a new task"
+                    placeholder="Add or edit a task"
                     value={text}
                     onChangeText={setText}
                 />
-                <Button title="Add" onPress={addTodo} />
+                <Button
+                    title={editingTodo ? "Update" : "Add"} // Dynamic button label
+                    onPress={editingTodo ? updateTodo : addTodo} // Dynamic action
+                />
             </View>
             <FlatList
                 data={todos}
@@ -70,9 +98,14 @@ const App = () => {
                 renderItem={({ item }) => (
                     <View style={styles.todoContainer}>
                         <Text style={styles.todoText}>{item.text}</Text>
-                        <TouchableOpacity onPress={() => deleteTodo(item._id)}>
-                            <Text style={styles.deleteText}>Delete</Text>
-                        </TouchableOpacity>
+                        <View>
+                            <TouchableOpacity onPress={() => deleteTodo(item._id)}>
+                                <Text style={styles.deleteText}>Delete</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => handleEdit(item)}>
+                                <Text style={styles.updateText}>Edit</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 )}
             />
@@ -123,6 +156,10 @@ const styles = StyleSheet.create({
     },
     deleteText: {
         color: 'red',
+        fontWeight: 'bold',
+    },
+    updateText: {
+        color: "green",
         fontWeight: 'bold',
     },
 });

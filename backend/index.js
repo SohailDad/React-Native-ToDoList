@@ -46,4 +46,11 @@ app.delete('/todos/:id', async (req, res) => {
     res.json({ message: 'Todo deleted successfully!' });
 });
 
+app.put('/todos/:id', async (req, res) => {
+    const {id} = req.params
+    const {text} = req.body
+    const todo = await Todo.findByIdAndUpdate(id,text)
+    res.json(todo)
+})
+
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

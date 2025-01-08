@@ -56,6 +56,7 @@ const App = () => {
             );
             setText(''); // Clear the input field
             setEditingTodo(null); // Exit edit mode
+            fetchTodos();
         } catch (error) {
             console.error("Error updating todo:", error);
         }

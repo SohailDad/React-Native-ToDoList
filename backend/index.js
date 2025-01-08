@@ -49,6 +49,7 @@ app.delete('/todos/:id', async (req, res) => {
 app.put('/todos/:id', async (req, res) => {
     const {id} = req.params
     const {text} = req.body
+    // console.log(text)
     const todo = await Todo.findByIdAndUpdate(id,text)
     res.json(todo)
 })

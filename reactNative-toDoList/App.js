@@ -45,7 +45,6 @@ const App = () => {
 
     // Update existing todo
     const updateTodo = async () => {
-        console.log("updated.......")
         if (!editingTodo) return; // Ensure we are in edit mode
         try {
             const response = await axios.put(`${API_URL}/todos/${editingTodo}`, { text });

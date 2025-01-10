@@ -14,7 +14,7 @@ const App = () => {
     const [todos, setTodos] = useState([]);
     const [text, setText] = useState('');
     const [editingTodo, setEditingTodo] = useState(null); // Tracks the todo being edited
-
+    const [networkErrorMsg, setNetworkErrorMsg] = useState('')
     const API_URL = 'http://localhost:5000'; // Use 'localhost' for iOS Simulator and '10.0.2.2' for Android Emulator
 
     // Fetch todos from backend
@@ -36,10 +36,12 @@ const App = () => {
         if (text.trim() === '') return;
         try {
             const response = await axios.post(`${API_URL}/todos`, { text });
+
             setTodos([...todos, response.data]);
             setText('');
         } catch (error) {
             console.error(error);
+            setNetworkErrorMsg('Network Error...!')
         }
     };
 
@@ -64,6 +66,7 @@ const App = () => {
     // Delete todo
     const deleteTodo = async (id) => {
         try {
+            // console.log("id :  ",id);
             await axios.delete(`${API_URL}/todos/${id}`);
             setTodos(todos.filter(todo => todo._id !== id));
         } catch (error) {
@@ -91,7 +94,11 @@ const App = () => {
                     title={editingTodo ? "Update" : "Add"} // Dynamic button label
                     onPress={editingTodo ? updateTodo : addTodo} // Dynamic action
                 />
+
             </View>
+            {
+                networkErrorMsg ? <Text style={{color:"red"}}>{networkErrorMsg}</Text> : ''
+            }
             <FlatList
                 data={todos}
                 keyExtractor={(item) => item._id}

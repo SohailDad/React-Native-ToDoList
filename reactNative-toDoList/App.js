@@ -21,6 +21,7 @@ const App = () => {
     const fetchTodos = async () => {
         try {
             const response = await axios.get(`${API_URL}/todos`);
+            console.log("Fetched Todos:", response.data); //for testing 
             setTodos(response.data);
         } catch (error) {
             console.error(error);
@@ -52,7 +53,7 @@ const App = () => {
             const response = await axios.put(`${API_URL}/todos/${editingTodo}`, { text });
             setTodos((prevTodos) =>
                 prevTodos.map((todo) =>
-                    todo._id == editingTodo ? response.data : todo
+                    todo.id === editingTodo ? response.data : todo
                 )
             );
             setText(''); // Clear the input field
@@ -66,9 +67,10 @@ const App = () => {
     // Delete todo
     const deleteTodo = async (id) => {
         try {
-            // console.log("id :  ",id);
+            fetchTodos();
+            console.log("id :  ",id);// for testing 
             await axios.delete(`${API_URL}/todos/${id}`);
-            setTodos(todos.filter(todo => todo._id !== id));
+            setTodos(todos.filter(todo => todo.id !== id));
         } catch (error) {
             console.error(error);
         }
@@ -77,7 +79,7 @@ const App = () => {
     // Handle edit button click
     const handleEdit = (todo) => {
         setText(todo.text); // Set the input field to the selected todo's text
-        setEditingTodo(todo._id); // Enter edit mode
+        setEditingTodo(todo.id); // Enter edit mode
     };
 
     return (
@@ -101,12 +103,12 @@ const App = () => {
             }
             <FlatList
                 data={todos}
-                keyExtractor={(item) => item._id}
+                keyExtractor={(item) => item.id} //chnage the id for mongoos (_id)
                 renderItem={({ item }) => (
                     <View style={styles.todoContainer}>
                         <Text style={styles.todoText}>{item.text}</Text>
                         <View>
-                            <TouchableOpacity onPress={() => deleteTodo(item._id)}>
+                            <TouchableOpacity onPress={() => deleteTodo(item.id)}>
                                 <Text style={styles.deleteText}>Delete</Text>
                             </TouchableOpacity>
                             <TouchableOpacity onPress={() => handleEdit(item)}>

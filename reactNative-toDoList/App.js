@@ -67,7 +67,7 @@ const App = () => {
     // Delete todo
     const deleteTodo = async (id) => {
         try {
-            fetchTodos();
+            // fetchTodos(); //for testing
             console.log("id :  ",id);// for testing 
             await axios.delete(`${API_URL}/todos/${id}`);
             setTodos(todos.filter(todo => todo.id !== id));
